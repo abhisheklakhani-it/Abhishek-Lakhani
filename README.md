@@ -3,7 +3,7 @@
 Personal portfolio of **Abhishek Lakhani**, AI/ML Engineer working on LLMs, RAG
 systems, deep learning and MLOps.
 
-**Live site:** https://abhisheklakhani-it.github.io
+**Live site:** https://abhisheklakhani-it.github.io/Abhishek-Lakhani/
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -44,8 +44,8 @@ systems, deep learning and MLOps.
 Requires Node.js 20 or newer.
 
 ```bash
-git clone https://github.com/abhisheklakhani-it/abhisheklakhani-it.github.io.git
-cd abhisheklakhani-it.github.io
+git clone https://github.com/abhisheklakhani-it/Abhishek-Lakhani.git
+cd Abhishek-Lakhani
 npm install
 npm run dev
 ```

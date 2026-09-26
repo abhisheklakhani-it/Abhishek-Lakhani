@@ -6,6 +6,7 @@ export const GITHUB_USERNAME = 'abhisheklakhani-it'
 const EXCLUDED_REPOS = new Set([
   GITHUB_USERNAME, // profile README repo
   'Portfolio',
+  'Abhishek-Lakhani', // this site
   `${GITHUB_USERNAME}.github.io`,
 ])
 
