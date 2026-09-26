@@ -378,7 +378,7 @@ const Projects = () => {
                 <Button
                   variant="glass"
                   size="icon"
-                  aria-label="Scroll projects right"
+                  aria-label="Scroll projects left"
                   onClick={() => (nudge.current -= cardStep())}
                 >
                   <ChevronRight />
