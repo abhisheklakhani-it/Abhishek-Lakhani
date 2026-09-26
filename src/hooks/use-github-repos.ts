@@ -10,14 +10,11 @@ const EXCLUDED_REPOS = new Set([
   `${GITHUB_USERNAME}.github.io`,
 ])
 
-// Descriptions shown on the site in place of the repo's GitHub description.
-const DESCRIPTION_OVERRIDES: Record<string, string> = {
-  spendly: 'An expense tracking application for logging and categorizing spending.',
-}
-
 export interface GitHubRepo {
   id: number
   name: string
+  /** Display title; set by the build script, otherwise derived from `name`. */
+  title?: string
   description: string | null
   html_url: string
   homepage: string | null
@@ -25,12 +22,25 @@ export interface GitHubRepo {
   topics?: string[]
   stargazers_count: number
   forks_count: number
-  fork: boolean
-  archived: boolean
   pushed_at: string
 }
 
-const fetchRepos = async (): Promise<GitHubRepo[]> => {
+// Written at build time by scripts/fetch-projects.mjs: code-only repos with
+// descriptions filled in from GitHub, the README, or the repo's contents.
+const fetchGeneratedProjects = async (): Promise<GitHubRepo[] | null> => {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}github-projects.json`)
+    if (!res.ok) return null
+    const data: unknown = await res.json()
+    return Array.isArray(data) ? (data as GitHubRepo[]) : null
+  } catch {
+    return null
+  }
+}
+
+// Fallback when the generated file isn't there (e.g. local dev without running
+// `npm run projects`): ask GitHub directly and skip empty repos.
+const fetchLiveRepos = async (): Promise<GitHubRepo[]> => {
   const res = await fetch(
     `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=pushed`,
     { headers: { Accept: 'application/vnd.github+json' } }
@@ -43,13 +53,23 @@ const fetchRepos = async (): Promise<GitHubRepo[]> => {
     )
   }
 
-  const repos: GitHubRepo[] = await res.json()
+  const repos: (GitHubRepo & { fork: boolean; archived: boolean; size: number })[] =
+    await res.json()
   return repos
-    .filter((repo) => !repo.fork && !repo.archived && !EXCLUDED_REPOS.has(repo.name))
+    .filter((repo) => !repo.fork && !repo.archived && repo.size > 0)
     .map((repo) => ({
       ...repo,
-      description: DESCRIPTION_OVERRIDES[repo.name] ?? repo.description,
+      description:
+        repo.description
+          ?.replace(/\s*,?\s*\b(?:built|made|created|generated|developed)\s+(?:using|with|by)\s+[^.,;!?]*/gi, '')
+          .trim() || null,
     }))
+}
+
+const fetchRepos = async (): Promise<GitHubRepo[]> => {
+  const repos = (await fetchGeneratedProjects()) ?? (await fetchLiveRepos())
+  return repos
+    .filter((repo) => !EXCLUDED_REPOS.has(repo.name))
     .sort((a, b) => Date.parse(b.pushed_at) - Date.parse(a.pushed_at))
 }
 

@@ -15,12 +15,13 @@ systems, deep learning and MLOps.
 
 - **Animated hero**: a Three.js neural-network background that responds to the
   mouse, plus a profile photo and quick links.
-- **Live GitHub projects**: the "Latest on GitHub" section loads my public
-  repositories from the GitHub API on every visit, so new projects show up
-  automatically. Each card links to the repo, and to a live demo when the repo
-  has a website set.
-- **Curated featured projects**, skills, an experience timeline, education and
-  a "Beyond Code" section.
+- **Projects that keep themselves up to date**: featured projects and my public
+  GitHub repositories share one row that rotates continuously from left to
+  right. Each project appears once. Repositories without code are skipped, and
+  each one gets a short description from its GitHub description, its README, or
+  a summary of what the repository contains. The list refreshes on every deploy
+  and once a day.
+- **Skills, experience timeline, education** and a "Beyond Code" section.
 - **Contact form**: sends email through a Supabase Edge Function (via Resend)
   when one is configured. Otherwise it opens the visitor's email app with the
   message filled in.
@@ -71,14 +72,16 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-key
 | `npm run build`   | Type-check and build for production |
 | `npm run preview` | Preview the production build        |
 | `npm run lint`    | Run ESLint                          |
+| `npm run projects`| Collect GitHub projects into `public/github-projects.json` |
 
 ## Deployment
 
 The site is hosted on **GitHub Pages** for free and deployed by the workflow in
 `.github/workflows/deploy.yml`:
 
-1. A push to `main` triggers the workflow.
-2. It installs dependencies, builds the site and publishes `dist/` to Pages.
+1. A push to `main` triggers the workflow, and it also runs once a day.
+2. It collects the GitHub projects, builds the site and publishes `dist/` to
+   Pages.
 
 It sets the base path automatically, so it also works if you fork it into a repo
 with a different name (served from `/<repo>/`).
@@ -87,12 +90,18 @@ To enable the Supabase contact form in production, add `VITE_SUPABASE_URL` and
 `VITE_SUPABASE_PUBLISHABLE_KEY` as repository secrets
 (**Settings → Secrets and variables → Actions**).
 
-## Customizing the GitHub projects section
+## Customizing the projects section
 
-The GitHub username and the list of hidden repositories are in
-`src/hooks/use-github-repos.ts`. Forks and archived repositories are hidden
-automatically. Each card uses the repository's GitHub description, topics and
-website, so set those on GitHub to control how a project appears.
+- Featured projects are written by hand in `src/components/Projects.tsx`.
+- GitHub projects are collected by `scripts/fetch-projects.mjs`, which has the
+  username, the hidden repositories and optional description overrides. Forks,
+  archived repositories and repositories without code are skipped.
+- A repository's own GitHub description always wins, so setting one on GitHub is
+  the easiest way to change how a project is described.
+
+To see the GitHub projects locally, run `npm run projects` once (optionally with
+`GITHUB_TOKEN` set). Without it, the dev server loads them straight from the
+GitHub API.
 
 ## Contact form / Supabase function
 

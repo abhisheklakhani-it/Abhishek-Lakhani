@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Rebuild daily so new repositories and descriptions show up automatically.
+  schedule:
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -26,6 +29,11 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: Collect GitHub projects
+        run: npm run projects
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
         run: npm run build

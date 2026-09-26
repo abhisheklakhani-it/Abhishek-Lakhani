@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, Star } from 'lucide-react'
 import { GithubIcon } from '@/components/icons'
@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { GITHUB_USERNAME, useGitHubRepos, type GitHubRepo } from '@/hooks/use-github-repos'
 
 const PROFILE_URL = `https://github.com/${GITHUB_USERNAME}`
-const AUTO_SCROLL_MS = 3500
+// Rotation speed in px/s; positive moves cards from left to right.
+const ROTATION_SPEED = 45
 
 interface Project {
   title: string
@@ -147,8 +148,8 @@ const mergeProjects = (repos: GitHubRepo[] = []): DisplayProject[] => {
     .map(
       (repo): DisplayProject => ({
         key: `repo-${repo.id}`,
-        title: prettifyName(repo.name),
-        description: repo.description || 'Source code and details are on GitHub.',
+        title: repo.title || prettifyName(repo.name),
+        description: repo.description || `A ${repo.language ?? 'software'} project.`,
         tags: repo.topics?.slice(0, 4) ?? [],
         url: repo.html_url,
         homepage: repo.homepage,
@@ -241,51 +242,97 @@ const CardSkeleton = () => (
   </div>
 )
 
-const CARD_WIDTH = 'w-[85%] sm:w-[340px] shrink-0 snap-start'
+const CARD_WIDTH = 'w-[80vw] max-w-[340px] sm:w-[340px] shrink-0'
 
 const Projects = () => {
   const { data: repos, isLoading } = useGitHubRepos()
   const projects = useMemo(() => mergeProjects(repos), [repos])
 
+  const viewportRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
-  const [paused, setPaused] = useState(false)
-  const [canPrev, setCanPrev] = useState(false)
-  const [canNext, setCanNext] = useState(true)
+  const setRef = useRef<HTMLDivElement>(null)
+  const offset = useRef(0)
+  const nudge = useRef(0)
+  const paused = useRef(false)
+  const [looping, setLooping] = useState(false)
 
-  const updateArrows = useCallback(() => {
-    const el = trackRef.current
-    if (!el) return
-    setCanPrev(el.scrollLeft > 8)
-    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 8)
-  }, [])
-
-  const step = () => {
-    const el = trackRef.current
-    const card = el?.firstElementChild as HTMLElement | null
-    return card ? card.offsetWidth + 24 : 340
-  }
-
-  const scrollByCards = (direction: 1 | -1) => {
-    trackRef.current?.scrollBy({ left: direction * step(), behavior: 'smooth' })
-  }
+  // Rotate only when the cards overflow the screen; otherwise the second copy
+  // would put the same project on screen twice.
+  useEffect(() => {
+    const viewport = viewportRef.current
+    const set = setRef.current
+    if (!viewport || !set) return
+    const measure = () => setLooping(set.offsetWidth > viewport.clientWidth)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(viewport)
+    observer.observe(set)
+    return () => observer.disconnect()
+  }, [projects.length, isLoading])
 
   useEffect(() => {
-    updateArrows()
-    window.addEventListener('resize', updateArrows)
-    return () => window.removeEventListener('resize', updateArrows)
-  }, [projects, updateArrows])
+    const track = trackRef.current
+    if (!looping || !track) {
+      offset.current = 0
+      nudge.current = 0
+      if (track) track.style.transform = ''
+      return
+    }
 
-  // Glide through the projects left to right, then return to the first one.
-  useEffect(() => {
-    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = window.setInterval(() => {
-      const el = trackRef.current
-      if (!el) return
-      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8
-      el.scrollTo({ left: atEnd ? 0 : el.scrollLeft + step(), behavior: 'smooth' })
-    }, AUTO_SCROLL_MS)
-    return () => window.clearInterval(id)
-  }, [paused])
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let frame = 0
+    let last = performance.now()
+
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.1)
+      last = now
+      const width = setRef.current?.offsetWidth ?? 0
+
+      if (!paused.current && !reducedMotion) offset.current += ROTATION_SPEED * dt
+      if (nudge.current) {
+        const step = nudge.current * Math.min(1, dt * 8)
+        offset.current += step
+        nudge.current = Math.abs(nudge.current - step) < 0.5 ? 0 : nudge.current - step
+      }
+
+      // Two identical sets side by side; wrapping by one set width is seamless.
+      if (width > 0) {
+        while (offset.current >= 0) offset.current -= width
+        while (offset.current < -width) offset.current += width
+      }
+      track.style.transform = `translate3d(${offset.current}px, 0, 0)`
+      frame = requestAnimationFrame(tick)
+    }
+
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [looping])
+
+  const cardStep = () => {
+    const card = setRef.current?.firstElementChild as HTMLElement | null
+    return card ? card.offsetWidth + 24 : 364
+  }
+
+  const renderSet = (copy: boolean) => (
+    <div
+      ref={copy ? undefined : setRef}
+      className="flex shrink-0 gap-6 pr-6"
+      aria-hidden={copy || undefined}
+      inert={copy || undefined}
+    >
+      {projects.map((project) => (
+        <div key={project.key} className={CARD_WIDTH}>
+          <ProjectCard project={project} />
+        </div>
+      ))}
+      {isLoading &&
+        Array.from({ length: 2 }, (_, i) => (
+          <div key={`skeleton-${i}`} className={CARD_WIDTH}>
+            <CardSkeleton />
+          </div>
+        ))}
+    </div>
+  )
 
   return (
     <section id="projects" className="relative py-20 md:py-32 overflow-hidden">
@@ -308,55 +355,57 @@ const Projects = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="relative mb-12"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onFocusCapture={() => setPaused(true)}
-          onBlurCapture={() => setPaused(false)}
-          onTouchStart={() => setPaused(true)}
+          className="mb-12"
+          onMouseEnter={() => (paused.current = true)}
+          onMouseLeave={() => (paused.current = false)}
+          onFocusCapture={() => (paused.current = true)}
+          onBlurCapture={() => (paused.current = false)}
+          onTouchStart={() => (paused.current = true)}
+          onTouchEnd={() => window.setTimeout(() => (paused.current = false), 2500)}
         >
           <div className="flex items-center justify-between gap-4 mb-6">
-            <p className="text-sm text-muted-foreground">
-              {projects.length} projects
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="glass"
-                size="icon"
-                aria-label="Previous projects"
-                disabled={!canPrev}
-                onClick={() => scrollByCards(-1)}
-              >
-                <ChevronLeft />
-              </Button>
-              <Button
-                variant="glass"
-                size="icon"
-                aria-label="Next projects"
-                disabled={!canNext}
-                onClick={() => scrollByCards(1)}
-              >
-                <ChevronRight />
-              </Button>
-            </div>
+            <p className="text-sm text-muted-foreground">{projects.length} projects</p>
+            {looping && (
+              <div className="flex gap-2">
+                <Button
+                  variant="glass"
+                  size="icon"
+                  aria-label="Scroll projects left"
+                  onClick={() => (nudge.current += cardStep())}
+                >
+                  <ChevronLeft />
+                </Button>
+                <Button
+                  variant="glass"
+                  size="icon"
+                  aria-label="Scroll projects right"
+                  onClick={() => (nudge.current -= cardStep())}
+                >
+                  <ChevronRight />
+                </Button>
+              </div>
+            )}
           </div>
 
           <div
-            ref={trackRef}
-            onScroll={updateArrows}
-            className="no-scrollbar flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth py-3 -my-3"
+            ref={viewportRef}
+            className="overflow-hidden py-3 -my-3"
+            style={
+              looping
+                ? {
+                    maskImage:
+                      'linear-gradient(to right, transparent, black 4%, black 96%, transparent)',
+                  }
+                : undefined
+            }
           >
-            {projects.map((project) => (
-              <div key={project.key} className={CARD_WIDTH}>
-                <ProjectCard project={project} />
-              </div>
-            ))}
-            {isLoading &&
-              Array.from({ length: 2 }, (_, i) => (
-                <div key={`skeleton-${i}`} className={CARD_WIDTH}>
-                  <CardSkeleton />
-                </div>
-              ))}
+            <div
+              ref={trackRef}
+              className={`flex w-max will-change-transform ${looping ? '' : 'mx-auto'}`}
+            >
+              {renderSet(false)}
+              {looping && renderSet(true)}
+            </div>
           </div>
         </motion.div>
 
