@@ -9,6 +9,11 @@ const EXCLUDED_REPOS = new Set([
   `${GITHUB_USERNAME}.github.io`,
 ])
 
+// Descriptions shown on the site in place of the repo's GitHub description.
+const DESCRIPTION_OVERRIDES: Record<string, string> = {
+  spendly: 'An expense tracking application for logging and categorizing spending.',
+}
+
 export interface GitHubRepo {
   id: number
   name: string
@@ -40,6 +45,10 @@ const fetchRepos = async (): Promise<GitHubRepo[]> => {
   const repos: GitHubRepo[] = await res.json()
   return repos
     .filter((repo) => !repo.fork && !repo.archived && !EXCLUDED_REPOS.has(repo.name))
+    .map((repo) => ({
+      ...repo,
+      description: DESCRIPTION_OVERRIDES[repo.name] ?? repo.description,
+    }))
     .sort((a, b) => Date.parse(b.pushed_at) - Date.parse(a.pushed_at))
 }
 
