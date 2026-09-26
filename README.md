@@ -16,8 +16,8 @@ systems, deep learning and MLOps.
 - **Animated hero**: a Three.js neural-network background that responds to the
   mouse, plus a profile photo and quick links.
 - **Projects that keep themselves up to date**: featured projects and my public
-  GitHub repositories share one row that rotates continuously from left to
-  right. Each project appears once. Repositories without code are skipped, and
+  GitHub repositories share one row that rotates continuously from right to
+  left. Each project appears once. Repositories without code are skipped, and
   each one gets a short description from its GitHub description, its README, or
   a summary of what the repository contains. The list refreshes on every deploy
   and once a day.

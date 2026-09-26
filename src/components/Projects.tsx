@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button'
 import { GITHUB_USERNAME, useGitHubRepos, type GitHubRepo } from '@/hooks/use-github-repos'
 
 const PROFILE_URL = `https://github.com/${GITHUB_USERNAME}`
-// Rotation speed in px/s; positive moves cards from left to right.
-const ROTATION_SPEED = 45
+// Rotation speed in px/s; negative moves cards from right to left.
+const ROTATION_SPEED = -45
 
 interface Project {
   title: string
