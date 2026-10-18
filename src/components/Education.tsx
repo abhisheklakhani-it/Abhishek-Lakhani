@@ -14,16 +14,16 @@ const EDUCATION: EducationItem[] = [
   {
     degree: "Master's in Automotive Software Engineering",
     institution: 'Technische Universität Chemnitz',
-    location: 'Germany',
-    period: '2022 – Present',
+    location: 'Chemnitz, Germany',
+    period: 'Apr 2022 – expected Jul 2027',
     courses: ['Computer Vision', 'Software Engineering', 'Embedded Systems'],
     current: true,
   },
   {
-    degree: 'Bachelor of Engineering in Computer Science',
-    institution: 'Government Engineering College Dahod',
-    location: 'India',
-    period: '2017 – 2021',
+    degree: 'B.E. in Computer Science Engineering',
+    institution: 'Gujarat Technological University',
+    location: 'Gujarat, India',
+    period: 'Aug 2017 – Jul 2021',
   },
 ]
 

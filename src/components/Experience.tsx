@@ -20,8 +20,8 @@ const EXPERIENCE: ExperienceItem[] = [
     period: 'Jun 2025 – Jan 2026',
     type: 'research',
     description: [
-      'Designed a privacy-focused image classification pipeline in TensorFlow, running federated learning experiments across decentralized Solid POD data sources',
-      'Set up modular Python components — structured logging, custom exceptions, and CSV-based result tracking — for reproducible experiments',
+      'Built a privacy-focused image classification pipeline in TensorFlow with federated learning across decentralised Solid Pod data sources',
+      'Wrote modular Python tooling (structured logging, CSV result tracking) for reproducible experiments',
     ],
   },
   {
@@ -42,8 +42,7 @@ const EXPERIENCE: ExperienceItem[] = [
     period: 'Dec 2020 – May 2021',
     type: 'engineering',
     description: [
-      'Built and maintained backend features in Core PHP, tuning MySQL queries to improve application performance',
-      'Took part in code reviews and documentation alongside a multidisciplinary team',
+      'Built and maintained backend features in Core PHP and tuned MySQL queries for performance',
     ],
   },
 ]

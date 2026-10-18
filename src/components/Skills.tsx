@@ -5,6 +5,7 @@ import {
   Cog,
   Cloud,
   Wrench,
+  Globe,
 } from 'lucide-react'
 
 const SKILL_CATEGORIES = [
@@ -25,8 +26,10 @@ const SKILL_CATEGORIES = [
       'RAG',
       'LangChain',
       'Hugging Face Transformers',
-      'Fine-Tuning',
+      'Fine-Tuning (DistilBERT)',
+      'Sentence Embeddings',
       'Text Classification',
+      'LLM APIs (Anthropic, Ollama)',
     ],
   },
   {
@@ -36,12 +39,13 @@ const SKILL_CATEGORIES = [
     skills: [
       'Qdrant',
       'FAISS',
-      'BM25 / Hybrid Search',
+      'BM25 / Hybrid Search (RRF)',
+      'Cross-Encoder Reranking',
       'PyTorch',
       'TensorFlow',
       'scikit-learn',
       'pandas',
-      'Evaluation & Metrics',
+      'Evaluation (nDCG, MRR, F1)',
     ],
   },
   {
@@ -51,19 +55,35 @@ const SKILL_CATEGORIES = [
     skills: [
       'FastAPI',
       'Pydantic',
-      'Docker',
+      'Docker / Compose',
       'ONNX Runtime',
       'Quantization',
       'pytest',
       'GitHub Actions',
       'PostgreSQL',
+      'SQLAlchemy',
+    ],
+  },
+  {
+    title: 'Web & Deployment',
+    icon: Globe,
+    color: 'from-violet-500 to-blue-500',
+    skills: [
+      'React',
+      'Next.js',
+      'Tailwind CSS',
+      'Supabase',
+      'Prisma',
+      'Playwright',
+      'Cloudflare Workers',
+      'Vercel / Render',
     ],
   },
   {
     title: 'Tools',
     icon: Wrench,
     color: 'from-sky-500 to-cyan-500',
-    skills: ['Git/GitHub', 'Linux', 'Streamlit', 'n8n', 'React'],
+    skills: ['Git/GitHub', 'Linux', 'Streamlit', 'n8n', 'CVAT', 'Agile/Scrum'],
   },
 ]
 

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 
 const HIGHLIGHTS = [
   { icon: MapPin, label: 'Chemnitz, Germany' },
-  { icon: Sparkles, label: 'Open to Roles' },
+  { icon: Sparkles, label: 'No Visa Sponsorship Needed' },
   { icon: Languages, label: 'English, German B1' },
 ]
 

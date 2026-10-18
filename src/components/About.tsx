@@ -56,12 +56,13 @@ const About = () => {
             className="space-y-6"
           >
             <p className="text-lg text-muted-foreground leading-relaxed">
-              I'm an M.Sc. student at TU Chemnitz building{' '}
-              <span className="text-foreground font-medium">NLP</span>,
-              <span className="text-foreground font-medium"> LLM/RAG systems</span>
-              {' '}and <span className="text-foreground font-medium">ML services</span> in Python. My
-              work focuses on building practical, production-ready AI solutions
-              that solve real-world problems.
+              I'm an M.Sc. student (Automotive Software Engineering, TU Chemnitz) who builds
+              and measures{' '}
+              <span className="text-foreground font-medium">NLP</span> and{' '}
+              <span className="text-foreground font-medium">LLM systems</span> in Python. I
+              launched <span className="text-foreground font-medium">SmartVisual</span>, a live
+              LLM data analytics app, and built tested projects in hybrid RAG, LLM structured
+              extraction and German DistilBERT fine-tuning with ONNX int8 deployment.
             </p>
 
             <p className="text-lg text-muted-foreground leading-relaxed">
@@ -84,9 +85,9 @@ const About = () => {
             <p className="text-lg text-muted-foreground leading-relaxed">
               Looking for{' '}
               <span className="text-accent font-medium">
-                Internship / Working Student / Master's Thesis roles
+                working student, thesis or junior roles in Applied AI
               </span>
-              , with potential for full-time AI/ML positions in Germany.
+              . No visa sponsorship required.
             </p>
 
             <Highlights />

@@ -74,8 +74,9 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8"
             >
-              I build practical AI systems – from LLM-powered applications and RAG
-              pipelines to decentralized, privacy-preserving ML solutions.
+              I build and measure NLP and LLM systems in Python – from a live LLM
+              analytics app to hybrid RAG, structured extraction and optimized
+              transformer inference.
             </motion.p>
 
             <motion.div

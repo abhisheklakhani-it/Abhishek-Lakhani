@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, Star } from 'lucide-react'
+import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, Lock, Star } from 'lucide-react'
 import { GithubIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { GITHUB_USERNAME, useGitHubRepos, type GitHubRepo } from '@/hooks/use-github-repos'
@@ -15,8 +15,12 @@ interface Project {
   tags: string[]
   /** Name of the matching GitHub repo, if the project lives in one. */
   repo?: string
-  /** Live site, used as the link when the code is not public. */
+  /** Live site or demo. */
   link?: string
+  /** Screenshot, chart or GIF from the project, served from public/projects. */
+  image?: string
+  /** Demo video from the project; `image` is used as its poster. */
+  video?: string
   featured?: boolean
 }
 
@@ -24,33 +28,21 @@ const PROJECTS: Project[] = [
   {
     title: 'SmartVisual',
     description:
-      'Live AI analytics app anyone can use: upload CSV/Excel, ask in English or German, get KPIs, charts and maps. The LLM only reads the question; every number is computed in code and checked by a 22-question eval in CI.',
+      'Live AI analytics app anyone can use: upload CSV/Excel, ask in English or German, get KPIs, 18 chart types, maps and insights. The LLM only reads the question; every number is computed in code and checked by a 22-question eval in CI.',
     tags: ['LLM', 'Data Viz', 'React', 'Supabase'],
     link: 'https://www.smartvisual.eu',
+    image: 'projects/smartvisual-poster.jpg',
+    video: 'projects/smartvisual.mp4',
     featured: true,
   },
   {
     title: 'RAG Document QA',
     description:
-      'Ask questions about your PDFs (scanned ones too, via OCR) and get cited answers streamed live. Hybrid BM25 + dense retrieval: nDCG@10 0.728 vs 0.567 for TF-IDF; 73 tests.',
+      'Ask questions about your PDFs (scanned ones too, via OCR) and get cited answers streamed live. Hybrid BM25 + dense retrieval: nDCG@10 0.728 vs 0.567 for TF-IDF; rejects 87% of off-topic questions; 73 tests.',
     tags: ['RAG', 'LLM', 'FastAPI', 'Docker'],
     repo: 'rag-docqa',
+    image: 'projects/rag-docqa.gif',
     featured: true,
-  },
-  {
-    title: 'Semantic Search API',
-    description:
-      'Production-style search API with hybrid dense + BM25 retrieval inside Qdrant (nDCG@10 0.737), filters, pagination and a benchmarked cross-encoder reranker. Docker Compose, 33 tests.',
-    tags: ['Qdrant', 'Search', 'FastAPI', 'Docker'],
-    repo: 'semantic-search-api',
-    featured: true,
-  },
-  {
-    title: 'ONNX Inference Optimization',
-    description:
-      'German DistilBERT exported to ONNX, fused and int8-quantized: 1.46x PyTorch throughput, 4x smaller, -0.3 pt accuracy, served by FastAPI in a 147 MB Docker image.',
-    tags: ['ONNX', 'MLOps', 'FastAPI', 'Docker'],
-    repo: 'onnx-inference-optimization',
   },
   {
     title: 'German Text Classifier',
@@ -58,6 +50,16 @@ const PROJECTS: Project[] = [
       'German news topic classification (10kGNAD): fine-tuned DistilBERT reaches 0.897 macro-F1 vs 0.845 for an embeddings + Qdrant kNN baseline (McNemar p < 0.001).',
     tags: ['NLP', 'Transformers', 'Text Classification', 'Qdrant'],
     repo: 'german-text-classifier',
+    image: 'projects/german-classifier.png',
+    featured: true,
+  },
+  {
+    title: 'ONNX Inference Optimization',
+    description:
+      'German DistilBERT exported to ONNX, fused and int8-quantized: 1.46x PyTorch throughput, 4x smaller (68 MB), -0.3 pt accuracy, served by FastAPI in a 147 MB Docker image.',
+    tags: ['ONNX', 'MLOps', 'FastAPI', 'Docker'],
+    repo: 'onnx-inference-optimization',
+    image: 'projects/onnx-throughput.png',
   },
   {
     title: 'LLM Structured Extractor',
@@ -65,6 +67,8 @@ const PROJECTS: Project[] = [
       'Turns messy English/German job postings into validated JSON with Pydantic and retries; all-fields-correct on a held-out set rose from 0.40 to 0.67. 43 tests.',
     tags: ['LLM', 'Pydantic', 'NLP', 'FastAPI'],
     repo: 'llm-structured-extractor',
+    image: 'projects/llm-extractor.png',
+    featured: true,
   },
   {
     title: 'Retrieval Eval Bench',
@@ -72,6 +76,15 @@ const PROJECTS: Project[] = [
       'TF-IDF vs BM25 vs dense (FAISS) vs hybrid retrieval on BEIR SciFact with a train/test split and significance tests; hybrid wins with nDCG@10 0.734 (p = 0.013).',
     tags: ['Search', 'Evaluation', 'RAG', 'ML'],
     repo: 'retrieval-eval-bench',
+    image: 'projects/retrieval-bench.png',
+  },
+  {
+    title: 'Semantic Search API',
+    description:
+      'Production-style search API with hybrid dense + BM25 retrieval inside Qdrant (nDCG@10 0.737), filters, pagination and a benchmarked cross-encoder reranker. Docker Compose, 33 tests.',
+    tags: ['Qdrant', 'Search', 'FastAPI', 'Docker'],
+    repo: 'semantic-search-api',
+    image: 'projects/semantic-search.png',
   },
   {
     title: 'Test Bench Commissioning App',
@@ -79,6 +92,15 @@ const PROJECTS: Project[] = [
       'Role-based web app that digitalises test-bench commissioning: priority notifications, tablet shop-floor mode, audit log. FastAPI, PostgreSQL, Docker, CI, 137 tests, live demo.',
     tags: ['FastAPI', 'PostgreSQL', 'Docker', 'n8n'],
     repo: 'n8n-test-bench-commissioning-tracker',
+    link: 'https://test-bench-commissioning.onrender.com',
+    image: 'projects/test-bench.gif',
+  },
+  {
+    title: 'Event Staff Scheduling Platform',
+    description:
+      'Staff scheduling, event logistics and working-hours approval for a mobile cocktail-bar company with ~100 staff. German/English, mobile-first, GDPR-minded, hosted in Germany. 330+ tests (shown with fictional demo data).',
+    tags: ['Next.js', 'TypeScript', 'PostgreSQL', 'Playwright'],
+    image: 'projects/citydrink.gif',
   },
   {
     title: 'LinkedIn Post Generator',
@@ -86,6 +108,7 @@ const PROJECTS: Project[] = [
       'Few-shot LangChain app that writes English/German LinkedIn posts as validated structured output and flags numbers you never gave. Streamlit UI, 34 tests.',
     tags: ['LLM', 'LangChain', 'Streamlit', 'NLP'],
     repo: 'linkedin-post-generator',
+    image: 'projects/linkedin-post.gif',
   },
 ]
 
@@ -115,6 +138,9 @@ const TAG_COLORS: Record<string, string> = {
   PostgreSQL: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
   n8n: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
   LangChain: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
+  'Next.js': 'bg-slate-500/20 text-slate-300 border-slate-500/30',
+  TypeScript: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  Playwright: 'bg-green-500/20 text-green-300 border-green-500/30',
 }
 
 const DEFAULT_TAG = 'bg-secondary/50 text-muted-foreground border-border/50'
@@ -134,8 +160,11 @@ interface DisplayProject {
   title: string
   description: string
   tags: string[]
-  url: string
+  /** GitHub link; missing when the code is private. */
+  url?: string
   homepage?: string | null
+  image?: string
+  video?: string
   language?: string | null
   stars?: number
   featured?: boolean
@@ -181,8 +210,10 @@ const mergeProjects = (repos: GitHubRepo[] = []): DisplayProject[] => {
       title: project.title,
       description: project.description,
       tags: project.tags,
-      url: repo?.html_url ?? project.link ?? PROFILE_URL,
-      homepage: repo?.homepage ?? project.link,
+      url: repo?.html_url ?? (project.repo ? `${PROFILE_URL}/${project.repo}` : undefined),
+      homepage: repo?.homepage || project.link,
+      image: project.image,
+      video: project.video,
       language: repo?.language,
       stars: repo?.stargazers_count,
       featured: project.featured,
@@ -207,11 +238,57 @@ const mergeProjects = (repos: GitHubRepo[] = []): DisplayProject[] => {
   return [...curated, ...fromGitHub]
 }
 
+// React doesn't render the `muted` attribute, so browsers block autoplay;
+// mute and start the video by hand once it's mounted.
+const DemoVideo = ({ src, poster, label }: { src: string; poster?: string; label: string }) => {
+  const ref = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = ref.current
+    if (!video) return
+    video.muted = true
+    video.play().catch(() => {})
+  }, [])
+
+  return (
+    <video
+      ref={ref}
+      src={src}
+      poster={poster}
+      className="w-full h-full object-cover object-top"
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      aria-label={label}
+    />
+  )
+}
+
 const ProjectCard = ({ project }: { project: DisplayProject }) => (
   <motion.div
     whileHover={{ y: -8 }}
     className="group relative glass-card p-6 h-full flex flex-col hover:border-primary/40 transition-colors duration-300"
   >
+    {(project.image || project.video) && (
+      <div className="-mx-2 -mt-2 mb-5 aspect-video overflow-hidden rounded-xl border border-border/50 bg-secondary/40">
+        {project.video ? (
+          <DemoVideo
+            src={`${import.meta.env.BASE_URL}${project.video}`}
+            poster={project.image && `${import.meta.env.BASE_URL}${project.image}`}
+            label={`${project.title} demo video`}
+          />
+        ) : (
+          <img
+            src={`${import.meta.env.BASE_URL}${project.image}`}
+            alt={`${project.title} screenshot`}
+            className="w-full h-full object-contain"
+            loading="lazy"
+          />
+        )}
+      </div>
+    )}
+
     {project.featured && (
       <div className="flex items-center gap-2 mb-4">
         <Star size={16} className="text-accent" />
@@ -259,12 +336,19 @@ const ProjectCard = ({ project }: { project: DisplayProject }) => (
     )}
 
     <div className="flex items-center gap-3">
-      <Button variant="ghost" size="sm" asChild className="gap-2">
-        <a href={project.url} target="_blank" rel="noopener noreferrer">
-          <GithubIcon size={16} />
-          View on GitHub
-        </a>
-      </Button>
+      {project.url ? (
+        <Button variant="ghost" size="sm" asChild className="gap-2">
+          <a href={project.url} target="_blank" rel="noopener noreferrer">
+            <GithubIcon size={16} />
+            View on GitHub
+          </a>
+        </Button>
+      ) : (
+        <span className="inline-flex items-center gap-2 px-3 text-sm text-muted-foreground">
+          <Lock size={14} />
+          Private code
+        </span>
+      )}
       {project.homepage && (
         <Button variant="ghost" size="sm" asChild className="gap-2">
           <a href={project.homepage} target="_blank" rel="noopener noreferrer">
