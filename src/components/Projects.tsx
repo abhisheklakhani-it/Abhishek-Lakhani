@@ -15,10 +15,20 @@ interface Project {
   tags: string[]
   /** Name of the matching GitHub repo, if the project lives in one. */
   repo?: string
+  /** Live site, used as the link when the code is not public. */
+  link?: string
   featured?: boolean
 }
 
 const PROJECTS: Project[] = [
+  {
+    title: 'SmartVisual',
+    description:
+      'Live AI analytics app: upload CSV/Excel, ask in English or German, get KPIs, charts and maps. The LLM only reads the question; every number is computed in code and checked by a 22-question eval in CI.',
+    tags: ['LLM', 'Data Viz', 'React', 'Supabase'],
+    link: 'https://www.smartvisual.eu',
+    featured: true,
+  },
   {
     title: 'RAG Document QA',
     description:
@@ -81,6 +91,9 @@ const PROJECTS: Project[] = [
 
 const TAG_COLORS: Record<string, string> = {
   LLM: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+  'Data Viz': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+  React: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+  Supabase: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   SQL: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
   MLOps: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
   Streamlit: 'bg-red-500/20 text-red-300 border-red-500/30',
@@ -168,8 +181,8 @@ const mergeProjects = (repos: GitHubRepo[] = []): DisplayProject[] => {
       title: project.title,
       description: project.description,
       tags: project.tags,
-      url: repo?.html_url ?? PROFILE_URL,
-      homepage: repo?.homepage,
+      url: repo?.html_url ?? project.link ?? PROFILE_URL,
+      homepage: repo?.homepage ?? project.link,
       language: repo?.language,
       stars: repo?.stargazers_count,
       featured: project.featured,
