@@ -24,7 +24,7 @@ const PROJECTS: Project[] = [
   {
     title: 'SmartVisual',
     description:
-      'Live AI analytics app: upload CSV/Excel, ask in English or German, get KPIs, charts and maps. The LLM only reads the question; every number is computed in code and checked by a 22-question eval in CI.',
+      'Live AI analytics app anyone can use: upload CSV/Excel, ask in English or German, get KPIs, charts and maps. The LLM only reads the question; every number is computed in code and checked by a 22-question eval in CI.',
     tags: ['LLM', 'Data Viz', 'React', 'Supabase'],
     link: 'https://www.smartvisual.eu',
     featured: true,
