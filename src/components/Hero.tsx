@@ -65,7 +65,7 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="text-xl sm:text-2xl md:text-3xl font-semibold text-muted-foreground mb-6"
             >
-              AI Engineer · LLMs &amp; RAG · MLOps
+              Applied AI Engineer · NLP &amp; LLM Systems
             </motion.h2>
 
             <motion.p

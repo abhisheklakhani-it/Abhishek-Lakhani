@@ -20,55 +20,88 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
-    title: 'SmartVisual.ai',
+    title: 'RAG Document QA',
     description:
-      'AI analytics assistant that turns natural-language questions into SQL, analyzes data, and auto-builds dashboards with interactive charts and insights.',
-    tags: ['LLM', 'SQL', 'Data Viz', 'MLOps'],
+      'Ask questions about your PDFs (scanned ones too, via OCR) and get cited answers streamed live. Hybrid BM25 + dense retrieval: nDCG@10 0.728 vs 0.567 for TF-IDF; 73 tests.',
+    tags: ['RAG', 'LLM', 'FastAPI', 'Docker'],
+    repo: 'rag-docqa',
     featured: true,
   },
   {
-    title: 'LLM-Powered Resume ATS Analyzer',
+    title: 'Semantic Search API',
     description:
-      'Compares resumes with job descriptions using Google Gemini Pro Vision, scores similarity, detects missing ATS keywords, and suggests improvements.',
-    tags: ['LLM', 'Gemini', 'Streamlit', 'ATS'],
+      'Production-style search API with hybrid dense + BM25 retrieval inside Qdrant (nDCG@10 0.737), filters, pagination and a benchmarked cross-encoder reranker. Docker Compose, 33 tests.',
+    tags: ['Qdrant', 'Search', 'FastAPI', 'Docker'],
+    repo: 'semantic-search-api',
+    featured: true,
   },
   {
-    title: 'AI Chatbot (NLP)',
+    title: 'ONNX Inference Optimization',
     description:
-      'Deep Learning & NLP chatbot achieving ~80% accuracy for intent classification and natural language understanding.',
-    tags: ['NLP', 'Deep Learning', 'Text Classification'],
+      'German DistilBERT exported to ONNX, fused and int8-quantized: 1.46x PyTorch throughput, 4x smaller, -0.3 pt accuracy, served by FastAPI in a 147 MB Docker image.',
+    tags: ['ONNX', 'MLOps', 'FastAPI', 'Docker'],
+    repo: 'onnx-inference-optimization',
   },
   {
-    title: 'Bird Species Classification',
+    title: 'German Text Classifier',
     description:
-      'Image classifier for bird species using CNN architecture with strong evaluation accuracy.',
-    tags: ['Computer Vision', 'CNN', 'TensorFlow'],
-    repo: 'bird_species_classifier',
+      'German news topic classification (10kGNAD): fine-tuned DistilBERT reaches 0.897 macro-F1 vs 0.845 for an embeddings + Qdrant kNN baseline (McNemar p < 0.001).',
+    tags: ['NLP', 'Transformers', 'Text Classification', 'Qdrant'],
+    repo: 'german-text-classifier',
   },
   {
-    title: 'Sentiment Analysis',
+    title: 'LLM Structured Extractor',
     description:
-      'Sentiment model that classifies text into positive/negative/neutral categories with high accuracy.',
-    tags: ['NLP', 'Sentiment', 'ML'],
+      'Turns messy English/German job postings into validated JSON with Pydantic and retries; all-fields-correct on a held-out set rose from 0.40 to 0.67. 43 tests.',
+    tags: ['LLM', 'Pydantic', 'NLP', 'FastAPI'],
+    repo: 'llm-structured-extractor',
+  },
+  {
+    title: 'Retrieval Eval Bench',
+    description:
+      'TF-IDF vs BM25 vs dense (FAISS) vs hybrid retrieval on BEIR SciFact with a train/test split and significance tests; hybrid wins with nDCG@10 0.734 (p = 0.013).',
+    tags: ['Search', 'Evaluation', 'RAG', 'ML'],
+    repo: 'retrieval-eval-bench',
+  },
+  {
+    title: 'Test Bench Commissioning App',
+    description:
+      'Role-based web app that digitalises test-bench commissioning: priority notifications, tablet shop-floor mode, audit log. FastAPI, PostgreSQL, Docker, CI, 137 tests, live demo.',
+    tags: ['FastAPI', 'PostgreSQL', 'Docker', 'n8n'],
+    repo: 'n8n-test-bench-commissioning-tracker',
+  },
+  {
+    title: 'LinkedIn Post Generator',
+    description:
+      'Few-shot LangChain app that writes English/German LinkedIn posts as validated structured output and flags numbers you never gave. Streamlit UI, 34 tests.',
+    tags: ['LLM', 'LangChain', 'Streamlit', 'NLP'],
+    repo: 'linkedin-post-generator',
   },
 ]
 
 const TAG_COLORS: Record<string, string> = {
   LLM: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
   SQL: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  'Data Viz': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   MLOps: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-  Gemini: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
   Streamlit: 'bg-red-500/20 text-red-300 border-red-500/30',
-  ATS: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
   NLP: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
   'Deep Learning': 'bg-sky-500/20 text-sky-300 border-sky-500/30',
   'Text Classification': 'bg-teal-500/20 text-teal-300 border-teal-500/30',
   'Computer Vision': 'bg-violet-500/20 text-violet-300 border-violet-500/30',
-  CNN: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
   TensorFlow: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-  Sentiment: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
   ML: 'bg-lime-500/20 text-lime-300 border-lime-500/30',
+  RAG: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+  FastAPI: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+  Docker: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+  Qdrant: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+  Search: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  ONNX: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
+  Transformers: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
+  Pydantic: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
+  Evaluation: 'bg-lime-500/20 text-lime-300 border-lime-500/30',
+  PostgreSQL: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  n8n: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+  LangChain: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
 }
 
 const DEFAULT_TAG = 'bg-secondary/50 text-muted-foreground border-border/50'

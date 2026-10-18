@@ -56,10 +56,10 @@ const About = () => {
             className="space-y-6"
           >
             <p className="text-lg text-muted-foreground leading-relaxed">
-              I'm an AI/ML engineer with hands-on experience in{' '}
-              <span className="text-foreground font-medium">Deep Learning</span>,
-              <span className="text-foreground font-medium"> LLMs/RAG systems</span>,
-              and <span className="text-foreground font-medium">MLOps</span>. My
+              I'm an M.Sc. student at TU Chemnitz building{' '}
+              <span className="text-foreground font-medium">NLP</span>,
+              <span className="text-foreground font-medium"> LLM/RAG systems</span>
+              {' '}and <span className="text-foreground font-medium">ML services</span> in Python. My
               work focuses on building practical, production-ready AI solutions
               that solve real-world problems.
             </p>
@@ -77,8 +77,8 @@ const About = () => {
               <span className="text-primary"> LangChain</span>,{' '}
               <span className="text-primary">FastAPI</span>,
               <span className="text-primary"> Docker</span>,{' '}
-              <span className="text-primary">MLflow</span>, and building
-              end-to-end ML pipelines.
+              <span className="text-primary">Qdrant</span>, and building
+              end-to-end ML pipelines that I measure on held-out data.
             </p>
 
             <p className="text-lg text-muted-foreground leading-relaxed">
